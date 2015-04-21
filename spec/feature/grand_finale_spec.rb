@@ -9,7 +9,21 @@ require 'capybara/rspec'
 # Once all planes are in the air again, check that they have status "flying!"
 
 feature 'Grand Finale' do
-
-  xscenario 'all planes can land and all planes can take off'
+  let(:airport) { Airport.new }
+  before(:each) do
+    allow(Weather).to receive(:stormy?) { false }
+  end
+  scenario 'all planes can land and all planes can take off' do
+    planes = []
+    10.times { planes << Plane.new }
+    planes.each do |plane|
+      airport.land plane
+    end
+    expect(planes).to be_all { |plane| plane.status == :landed }
+    planes.each do |plane|
+      airport.take_off plane
+    end
+    expect(planes).to be_all { |plane| plane.status == :flying }
+  end
 
 end
